@@ -1,16 +1,20 @@
 <?php
 
-namespace Controller;
+namespace Model;
 
 class Database {
-  private $servername = "localhost";
-  private $dbUsername = "ad13113";
-  private $dbPassword = "M%9%FhgDJ8sw^z4PV8!r";
-  private $dbname = "ad13113";
+  private $servername = "";
+  private $dbUsername = "";
+  private $dbPassword = "";
+  private $dbname = "";
   private $conn;
   private $stmt;
 
-  public function __construct() {
+  public function __construct($config) {
+    $this->servername = $config["servername"];
+    $this->dbUsername = $config["dbUsername"];
+    $this->dbPassword = $config["dbPassword"];
+    $this->dbname = $config["dbname"];
     $this->conn = new \PDO("mysql:host=$this->servername;dbname=$this->dbname", $this->dbUsername, $this->dbPassword);
     $this->conn->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
   } 

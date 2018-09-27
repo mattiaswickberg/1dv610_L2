@@ -24,7 +24,7 @@ class LoginView {
 	public function response($message) {
 			
 		$response = $this->generateLoginFormHTML($message);
-		//$response .= $this->generateLogoutButtonHTML($message);
+		$response .= $this->generateLogoutButtonHTML($message);
 		return $response;
 	}
 
@@ -36,7 +36,6 @@ class LoginView {
 	private function generateLogoutButtonHTML($message) {
 		return '
 			<form  method="post" >
-				<p id="' . self::$messageId . '">' . $message .'</p>
 				<input type="submit" name="' . self::$logout . '" value="logout"/>
 			</form>
 		';
@@ -78,3 +77,4 @@ class LoginView {
 		$this->username = $username;
 	}
 }
+//<p id="' . self::$messageId . '">' . $message .'</p>

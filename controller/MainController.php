@@ -7,8 +7,15 @@ class Main {
   private $isLoggedIn = false;
   private $showRegister = false;
 
-  public function Start(\View\LayoutView $lv, \View\LoginView $v, \View\DateTimeView $dtv, \View\RegisterView $rv, Login $login, Register $register , Database $db) {
-    if (isset($_GET["register"])) {
+  public function Start(\View\LayoutView $lv, \View\LoginView $v, \View\DateTimeView $dtv, \View\RegisterView $rv, \Model\Login $login, \Model\Register $register , \Model\Database $db, \Model\Logout $logout) {
+    if (isset($_POST["LoginView::Logout"])) {
+      $logout->Logout($lv, $v, $dtv, $rv, $db);
+    } else if(isset($_SESSION["username"])) {
+      $this->isLoggedIn = true;
+      $this->message = "";
+      $lv->render($this->isLoggedIn, $this->showRegister, $this->message, $v, $dtv, $rv);
+    } else {
+      if (isset($_GET["register"])) {
       $this->showRegister = true;
     }
 
@@ -23,5 +30,6 @@ class Main {
     } else {
       $lv->render($this->isLoggedIn, $this->showRegister, $this->message, $v, $dtv, $rv);
     }
+    }    
   }
 }

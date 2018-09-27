@@ -1,6 +1,6 @@
 <?php
 
-namespace Controller;
+namespace Model;
 
 class Login {
 
@@ -22,6 +22,7 @@ class Login {
         } else {
           $this->isLoggedIn = true;
           $this->message = "Welcome";
+          $_SESSION["username"] = $_POST["LoginView::UserName"];
         }
       } else {
         $this->message = "Wrong name or password";       
