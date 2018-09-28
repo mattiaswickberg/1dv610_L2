@@ -16,6 +16,8 @@ class Register {
       if (strlen($_POST["RegisterView::Password"]) <6) {
         $this->message .= "Password has too few characters, at least 6 characters. ";
       }
+    } else if (!\ctype_alnum($_POST["RegisterView::UserName"])) {
+      $this->message = "Username contains invalid characters.";
     } else if ($_POST["RegisterView::Password"] !== $_POST["RegisterView::PasswordRepeat"]) {
       $this->message = "Passwords do not match.";
     } else {
@@ -34,7 +36,7 @@ class Register {
       }
       
     }
-    $rv->setUserName($_POST["RegisterView::UserName"]);
+    $rv->setUserName(\strip_tags( $_POST["RegisterView::UserName"]));
     $lv->render($this->isLoggedIn, $this->showRegister, $this->message, $v, $dtv, $rv);
   }
 }
