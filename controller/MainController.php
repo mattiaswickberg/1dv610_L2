@@ -7,13 +7,13 @@ class Main {
   private $isLoggedIn = false;
   private $showRegister = false;
 
-  public function Start(\View\LayoutView $lv, \View\LoginView $v, \View\DateTimeView $dtv, \View\RegisterView $rv, \Model\Login $login, \Model\Register $register , \Model\Database $db, \Model\Logout $logout) {
+  public function Start(\View\LayoutView $layoutView, \View\LoginView $LoginView, \View\DateTimeView $dateTimeView, \View\RegisterView $RegisterView, \Model\Login $login, \Model\Register $register , \Model\Database $db, \Model\Logout $logout) {
     if (isset($_POST["LoginView::Logout"])) {
-      $logout->Logout($lv, $v, $dtv, $rv, $db);
+      $logout->Logout($layoutView, $LoginView, $dateTimeView, $RegisterView, $db);
     } else if(isset($_SESSION["username"])) {
       $this->isLoggedIn = true;
       $this->message = "";
-      $lv->render($this->isLoggedIn, $this->showRegister, $this->message, $v, $dtv, $rv);
+      $layoutView->render($this->isLoggedIn, $this->showRegister, $this->message, $LoginView, $dateTimeView, $RegisterView);
     } else {
       if (isset($_GET["register"])) {
       $this->showRegister = true;
@@ -24,11 +24,11 @@ class Main {
     }
 
     if (isset($_POST["LoginView::Login"])) {
-      $login->CheckLogin($lv, $v, $dtv, $rv, $db);
+      $login->CheckLogin($layoutView, $LoginView, $dateTimeView, $RegisterView, $db);
     } else if (isset($_POST["RegisterView::Register"])) {
-      $register->CheckRegister($lv, $v, $dtv, $rv, $db);
+      $register->CheckRegister($layoutView, $LoginView, $dateTimeView, $RegisterView, $db);
     } else {
-      $lv->render($this->isLoggedIn, $this->showRegister, $this->message, $v, $dtv, $rv);
+      $layoutView->render($this->isLoggedIn, $this->showRegister, $this->message, $LoginView, $dateTimeView, $RegisterView);
     }
     }    
   }

@@ -39,4 +39,28 @@ class Register {
     $rv->setUserName(\strip_tags( $_POST["RegisterView::UserName"]));
     $lv->render($this->isLoggedIn, $this->showRegister, $this->message, $v, $dtv, $rv);
   }
+
+  private function CheckUsernameLength($username) {
+
+  }
+
+  private function CheckPasswordLength($password) {
+
+  }
+
+  private function InvalidCharacters($username) {
+
+  }
+
+  private function PasswordsMatch($password, $passwordRepeat) {
+
+  }
+
+  private function UserExists($username) {
+
+  }
+
+  private function AddUser($username, $password) {
+    
+  }
 }
