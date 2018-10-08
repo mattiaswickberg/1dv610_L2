@@ -40,27 +40,32 @@ class Register {
     $lv->render($this->isLoggedIn, $this->showRegister, $this->message, $v, $dtv, $rv);
   }
 
-  private function CheckUsernameLength($username) {
-
+  private function CheckUsernameLength($username):bool {
+    return (strlen($_POST["RegisterView::UserName"]) <3);
   }
 
-  private function CheckPasswordLength($password) {
-
+  private function CheckPasswordLength($password) : bool {
+    return (strlen($_POST["RegisterView::Password"]) < 6);
   }
 
-  private function InvalidCharacters($username) {
-
+  private function HasInvalidCharacters($username):  bool {
+    return !\ctype_alnum($_POST["RegisterView::UserName"]);
   }
 
   private function PasswordsMatch($password, $passwordRepeat) {
-
+    ($_POST["RegisterView::Password"] !== $_POST["RegisterView::PasswordRepeat"]);
   }
 
-  private function UserExists($username) {
-
+  private function UserExists($username) :bool {
+    $user = $db->getUser($_POST["RegisterView::UserName"]);
+    if($user) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   private function AddUser($username, $password) {
-    
+    $addUser = $db->AddUser($_POST["RegisterView::UserName"], $_POST["RegisterView::Password"]);
   }
 }
