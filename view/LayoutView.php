@@ -3,7 +3,7 @@
 namespace View;
 class LayoutView {
   
-  public function render($isLoggedIn, $showRegister, $message, LoginView $v, DateTimeView $dtv, registerView $rv) {
+  public function render($isLoggedIn, $showRegister, $message, LoginView $LoginView, DateTimeView $dtv, registerView $RegisterView, \View\BooksView $BooksView, \View\AddBookView $AddBookView, \View\EditBookView $EditBookView) {
     echo '<!DOCTYPE html>
       <html>
         <head>
@@ -15,8 +15,9 @@ class LayoutView {
           ' . $this->renderIsLoggedIn($isLoggedIn) . '
 
           <div class="container">
-              ' . $this->registerUser($showRegister, $v, $rv, $message) . '
-              
+              ' . $this->registerUser($showRegister, $LoginView, $RegisterView, $message, $isLoggedIn) . '
+              ' . $this->showBooks($isLoggedIn, $BooksView, $AddBookView, $EditBookView) . '
+
               ' . $dtv->show() . '
           </div>
          </body>
@@ -33,11 +34,27 @@ class LayoutView {
     }
   }
 
-  private function registerUser($showRegister, $v , $rv, $message) {
+  private function registerUser($showRegister, $LoginView , $RegisterView, $message, $isLoggedIn) {
+    $response = '';
     if ($showRegister) {
-      return '<p><a href="index.php">Back to login</a></p>' . $rv->response($message);
+      $response = '<p><a href="index.php">Back to login</a></p>' . $RegisterView->response($message);
     } else {
-      return '<p><a href="index.php?register">Register a new user</a></p> ' . $v->response($message);
-    }
+      if (!$showRegister && !$isLoggedIn) {
+        $response .= '<p><a href="index.php?register">Register a new user</a></p> ';
+      } 
+      $response .= $LoginView->response($message, $isLoggedIn);
+    } 
+    return $response;
+  }
+
+  private function showBooks($isLoggedIn, $BooksView, $AddBookView, $EditBookView) {
+        if($isLoggedIn) {
+          return  ' <div> <h3>Add new book: </h3>' 
+          . $AddBookView->render() . ' </div>' . 
+          '<h1>Registered Books:</h1> '
+          . ' <div> '. $BooksView->render($EditBookView) . ' </div> ' ;
+        } else {
+          return '';
+        }
   }
 }

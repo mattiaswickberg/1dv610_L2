@@ -35,4 +35,57 @@ class Database {
     $result = $this->stmt->fetchAll();
     return($result);
   }
+
+  public function getBooksFromUser($user) {
+    $this->stmt = $this->conn->prepare("SELECT user, author, title, description, bookid FROM 1dv607_books WHERE user = :username");
+    $this->stmt->bindParam(':username', $user, \PDO::PARAM_STR);
+    $this->stmt->execute();
+
+    $result = $this->stmt->fetchAll();
+    return($result);
+  }
+
+  public function addBook($user, $author, $title, $description, $bookid) {
+    try {
+      $stmt = $this->conn->prepare("INSERT INTO 1dv607_books (user, author, title, description, bookid) VALUES (:user, :author, :title, :description, :bookid)");
+      $stmt->bindParam(':user', $user);
+      $stmt->bindParam(':author', $author);
+      $stmt->bindParam(':title', $title);
+      $stmt->bindParam(':description', $description);
+      $stmt->bindParam(':bookid', $bookid);
+      $stmt->execute();
+      return true;
+    }
+    catch (\Exception $e) {
+      echo $e->getMessage();
+    }
+  }
+
+  public function getBookById($user, $id) {
+    $this->stmt = $this->conn->prepare("SELECT user, author, title, description, bookid FROM 1dv607_books WHERE user = :username AND bookid = :bookid");
+    $this->stmt->bindParam(':username', $user, \PDO::PARAM_STR);
+    $this->stmt->bindParam(':bookid', $id, \PDO::PARAM_STR);
+    $this->stmt->execute();
+
+    $result = $this->stmt->fetchAll();
+    return($result);
+  }
+
+  public function updateBook($user, $id, $author, $title, $description) {
+    $stmt = $this->conn->prepare("UPDATE 1dv607_books SET author = :author, title = :title, description = :description WHERE user = :username AND bookid = :bookid");
+    $stmt->bindParam(':username', $user, \PDO::PARAM_STR);
+    $stmt->bindParam(':bookid', $id, \PDO::PARAM_STR);
+    $stmt->bindParam(':author', $author);
+    $stmt->bindParam(':title', $title);
+    $stmt->bindParam(':description', $description);
+    $stmt->execute();
+  }
+
+  public function deleteBook($user, $id) {
+    echo "Deleting stuff " . $user . " with bookid: " . $id;
+    $stmt = $this->conn->prepare("DELETE FROM 1dv607_books WHERE user = :username AND bookid = :bookid");
+    $stmt->bindParam(':username', $user, \PDO::PARAM_STR);
+    $stmt->bindParam(':bookid', $id, \PDO::PARAM_STR);
+    $stmt->execute();
+  }
 }

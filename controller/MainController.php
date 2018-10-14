@@ -7,7 +7,7 @@ class Main {
   private $isLoggedIn = false;
   private $showRegister = false;
 
-  public function Start(\View\LayoutView $layoutView, \View\LoginView $LoginView, \View\DateTimeView $dateTimeView, \View\RegisterView $RegisterView, \Model\Register $register , \Model\Database $db, \Controller\CheckCredentialsController $CheckCredentials) 
+  public function Start(\View\LayoutView $layoutView, \View\LoginView $LoginView, \View\DateTimeView $dateTimeView, \View\RegisterView $RegisterView, \View\BooksView $BooksView, \View\AddBookView $AddBookView, \Model\Register $register , \Model\Database $db, \Controller\CheckCredentialsController $CheckCredentials, \Controller\BooksController $BooksController, \View\EditBookView $EditBookView) 
   {
     $this->message = '';
     if (isset($_POST["LoginView::Logout"])) 
@@ -17,7 +17,8 @@ class Main {
     if(isset($_SESSION["username"]))
     {
       $this->isLoggedIn = true;
-      $this->message = "";      
+      $this->message = "";
+      $BooksController->Books($db, $BooksView, $EditBookView);  
     }
     else
     {
@@ -25,11 +26,12 @@ class Main {
       $this->showRegister = true;
     }
 
-    if (isset($_POST["LoginView::Login"])) 
+    if (isset($_POST["LoginView::Login"]))
     {
       try
       {
         $this->Login($CheckCredentials, $db);
+        $BooksController->Books($db, $BooksView, $EditBookView);  
       }
       catch (\Exception $e)
       {
@@ -44,7 +46,7 @@ class Main {
       $LoginView->setUserName($_POST["RegisterView::UserName"]);
     }   
     }      
-    $layoutView->render($this->isLoggedIn, $this->showRegister, $this->message, $LoginView, $dateTimeView, $RegisterView);   
+    $layoutView->render($this->isLoggedIn, $this->showRegister, $this->message, $LoginView, $dateTimeView, $RegisterView, $BooksView, $AddBookView, $EditBookView);   
   }
 
   private function Logout() 

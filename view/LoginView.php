@@ -21,9 +21,11 @@ class LoginView {
 	 *
 	 * @return  void BUT writes to standard output and cookies!
 	 */
-	public function response($message) {
-			
-		$response = $this->generateLoginFormHTML($message);
+	public function response($message, $isLoggedIn) {
+		$response = '<p id="' . self::$messageId . '">' . $message . '</p>';
+		if (!$isLoggedIn) {
+			$response .= $this->generateLoginFormHTML($message);
+		}
 		$response .= $this->generateLogoutButtonHTML($message);
 		return $response;
 	}
@@ -51,7 +53,6 @@ class LoginView {
 			<form method="post" > 
 				<fieldset>
 					<legend>Login - enter Username and password</legend>
-					<p id="' . self::$messageId . '">' . $message . '</p>
 					
 					<label for="' . self::$name . '">Username :</label>
 					<input type="text" id="' . self::$name . '" name="' . self::$name . '" value="' . $this->username . '" />
@@ -77,4 +78,3 @@ class LoginView {
 		$this->username = $username;
 	}
 }
-//<p id="' . self::$messageId . '">' . $message .'</p>
