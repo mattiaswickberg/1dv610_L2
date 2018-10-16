@@ -3,27 +3,26 @@
 namespace Controller;
 
 class BooksController {
-  private $EditBook = false;
 
-  public function Books(\Model\Database $db, \View\BooksView $BooksView, \View\EditBookView $EditBookView) {
-    if (isset($_POST["AddBookView::AddBook"])) 
+  public function Books(\Model\Database $db, \View\BooksView $BooksView, \View\AddBookView $AddBookView, \View\EditBookView $EditBookView) {
+    if ($AddBookView->getAddBookStatus()) 
     {
-      $this->addBookToDatabase($db);
+      $this->addBookToDatabase($db, $EditBookView, $AddBookView);
     }
-    if (isset($_GET["editbookid"])) {
-      $BooksView->setBookToEdit(($db->getBookById($_SESSION["username"], $_GET["editbookid"]))[0]);
+    if ($EditBookView->getIsEditActive()) {
+      $BooksView->setBookToEdit(($db->getBookById($EditBookView->getUser(), $EditBookView->getQueryBookId()))[0]);
     }
-    if (isset($_POST["EditBookView::EditBook"])) {
-      $db->updateBook($_SESSION["username"], $_POST["EditBookView::BookId"], $_POST["EditBookView::Author"], $_POST["EditBookView::Title"], $_POST["EditBookView::Description"] );
+    if ($EditBookView->getEditStatus()) {
+      $db->updateBook($EditBookView->getUser(), $EditBookView->getRequestBookId(), $EditBookView->getRequestAuthor(), $EditBookView->getRequestTitle(), $EditBookView->getRequestDescription());
     }
-    if (isset($_POST["EditBookView::DeleteBook"])) {
-      $db->deleteBook($_SESSION["username"], $_POST["EditBookView::BookId"]);
+    if ($EditBookView->getDeleteStatus()) {
+      $db->deleteBook($EditBookView->getUser(), $EditBookView->getRequestBookId());
     }
-    $BooksView->setBooks($this->getBooks($db));
+    $BooksView->setBooks($this->getBooks($db, $EditBookView));
   }
 
-  public function getBooks($db) : array {
-    return $db->getBooksFromUser($_SESSION["username"]);
+  public function getBooks($db, $EditBookView) : array {
+    return $db->getBooksFromUser($EditBookView->getUser());
   }
 
   private function getHighestId($books) : int {
@@ -36,11 +35,11 @@ class BooksController {
     return $id;
   }
 
-  private function addBookToDatabase($db) {
+  private function addBookToDatabase($db, $EditBookView, $AddBookView) {
     // getBookId
-    $id = $this->getHighestId($this->getBooks($db));
+    $id = $this->getHighestId($this->getBooks($db, $EditBookView));
 
     // add book to database
-    $db->addBook($_SESSION["username"], $_POST["AddBookView::Author"], $_POST["AddBookView::Title"], $_POST["AddBookView::Description"], $id);
+    $db->addBook($EditBookView->getUser(), $AddBookView->getRequestAuthor(), $AddBookView->getRequestTitle(), $AddBookView->getRequestDescription(), $id);
   }  
 }

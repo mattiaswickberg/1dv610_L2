@@ -7,8 +7,7 @@ class AddBookView {
 	private static $author = 'AddBookView::Author';
 	private static $title = 'AddBookView::Title';
 	private static $description = 'AddBookView::Description';
-  private static $messageId = 'AddBookView::Message';
-  private $message = "";
+
 	/**
 	 * 
 	 */
@@ -21,9 +20,7 @@ class AddBookView {
 		return '
 			<form method="post" > 
 				<fieldset>
-					<legend> Add new book - Enter at least author and title </legend>
-					<p id="' . self::$messageId . '">' . $this->message . '</p>
-					
+					<legend> Add new book - Enter at least author and title </legend>					
 					<label for="' . self::$author . '">Author :</label>
 					<input type="text" id="' . self::$author . '" name="' . self::$author . '" value="' . '" />
 
@@ -38,4 +35,34 @@ class AddBookView {
 			</form>
 		';
 	}
+
+		// Get functions for request variables
+
+		public function getAddBookStatus() : bool {
+			return (isset($_POST["AddBookView::AddBook"]));
+		}
+	
+		public function getRequestAuthor() : string {
+			if (isset($_POST["AddBookView::Author"])) {
+				return $_POST["AddBookView::Author"];
+			} else {
+				return "";
+			}
+		}
+	
+		public function getRequestTitle() : string {
+			if (isset($_POST["AddBookView::Title"])) {
+				return $_POST["AddBookView::Title"];
+			} else {
+				return "";
+			}
+		}
+	
+		public function getRequestDescription() : string {
+			if (isset($_POST["AddBookView::Description"])) {
+				return $_POST["AddBookView::Description"];
+			} else {
+				return "";
+			}
+		}
 }

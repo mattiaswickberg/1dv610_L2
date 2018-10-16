@@ -51,6 +51,41 @@ class RegisterView {
 			</form>
 		';
 	}
+
+	// Get request variables
+
+	public function getRegisterStatus() : bool {
+		return isset($_GET["register"]);
+	}
+
+	public function getRequestRegister() : bool {
+		return isset($_POST["RegisterView::Register"]);
+	}
+
+	public function getRequestUserName() : string {
+		if(isset($_POST["RegisterView::UserName"])) {
+			return $_POST["RegisterView::UserName"];
+		} else {
+			return "";
+		}
+	}
+
+	public function getRequestPassword() : string {
+		if(isset($_POST["RegisterView::Password"])) {
+			return $_POST["RegisterView::Password"];
+		} else {
+			return "";
+		}
+	}
+
+	public function getRequestPasswordRepeat() : string {
+		if(isset($_POST["RegisterView::PasswordRepeat"])) {
+			return $_POST["RegisterView::PasswordRepeat"];
+		} else {
+			return "";
+		}
+	}
+
 	public function setUserName($username) {
 		$this->username = $username;
 	}

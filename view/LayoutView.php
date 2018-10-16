@@ -3,7 +3,7 @@
 namespace View;
 class LayoutView {
   
-  public function render($isLoggedIn, $showRegister, $message, LoginView $LoginView, DateTimeView $dtv, registerView $RegisterView, \View\BooksView $BooksView, \View\AddBookView $AddBookView, \View\EditBookView $EditBookView) {
+  public function render($isLoggedIn, $showRegister, $message, LoginView $LoginView, DateTimeView $DateTimeView, registerView $RegisterView, \View\BooksView $BooksView, \View\AddBookView $AddBookView, \View\EditBookView $EditBookView) {
     echo '<!DOCTYPE html>
       <html>
         <head>
@@ -18,7 +18,7 @@ class LayoutView {
               ' . $this->registerUser($showRegister, $LoginView, $RegisterView, $message, $isLoggedIn) . '
               ' . $this->showBooks($isLoggedIn, $BooksView, $AddBookView, $EditBookView) . '
 
-              ' . $dtv->show() . '
+              ' . $DateTimeView->show() . '
           </div>
          </body>
       </html>

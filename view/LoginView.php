@@ -7,9 +7,6 @@ class LoginView {
 	private static $logout = 'LoginView::Logout';
 	private static $name = 'LoginView::UserName';
 	private static $password = 'LoginView::Password';
-	private static $cookieName = 'LoginView::CookieName';
-	private static $cookiePassword = 'LoginView::CookiePassword';
-	private static $keep = 'LoginView::KeepMeLoggedIn';
 	private static $messageId = 'LoginView::Message';
 	private $username = "";
 
@@ -59,9 +56,6 @@ class LoginView {
 
 					<label for="' . self::$password . '">Password :</label>
 					<input type="password" id="' . self::$password . '" name="' . self::$password . '" />
-
-					<label for="' . self::$keep . '">Keep me logged in  :</label>
-					<input type="checkbox" id="' . self::$keep . '" name="' . self::$keep . '" />
 					
 					<input type="submit" name="' . self::$login . '" value="login" />
 				</fieldset>
@@ -70,8 +64,34 @@ class LoginView {
 	}
 	
 	//CREATE GET-FUNCTIONS TO FETCH REQUEST VARIABLES
-	private function getRequestUserName() {
-		return $_POST["LoginView::UserName"];		
+	public function getRequestUserName() : string {
+		if (isset($_POST["LoginView::UserName"]))
+		{
+			return $_POST["LoginView::UserName"];
+		} else {
+			return "";
+		}				
+	}
+
+	public function getRequestPassword() {
+		if (isset($_POST["LoginView::Password"]))
+		{
+			return $_POST["LoginView::Password"];
+		} else {
+			return "";
+		}		
+	}
+
+	public function getRequestLogout() : bool {
+		return isset($_POST["LoginView::Logout"]);
+	}
+
+	public function getRequestLogin() : bool {
+		return isset($_POST["LoginView::Login"]);
+	}
+
+	public function getSessionStatus() : bool {
+		return isset($_SESSION["username"]);
 	}
 
 	public function setUserName($username) {

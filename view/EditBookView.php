@@ -8,7 +8,7 @@ class EditBookView {
 	private static $title = 'EditBookView::Title';
   private static $description = 'EditBookView::Description';
   private static $deleteBook = 'EditBookView::DeleteBook';
-  private static $bookId = 'EditBookView::BookId';
+	private static $bookId = 'EditBookView::BookId';
 
   public function render($book) : string {
 		$response = $this->generateEditBookFormHTML($book);
@@ -40,4 +40,66 @@ class EditBookView {
 			</form>
 		';
 	}  
+
+	// Get functions for request variables
+
+	public function getEditStatus() : bool {
+		return (isset($_POST["EditBookView::EditBook"]));
+	}
+
+	public function getDeleteStatus() : bool {
+		return (isset($_POST["EditBookView::DeleteBook"]));
+	}
+
+	public function getIsEditActive() : bool {
+		return isset($_GET["editbookid"]);
+	}
+
+	public function getRequestAuthor() : string {
+		if (isset($_POST["EditBookView::Author"])) {
+			return $_POST["EditBookView::Author"];
+		} else {
+			return "";
+		}
+	}
+
+	public function getRequestTitle() : string {
+		if (isset($_POST["EditBookView::Title"])) {
+			return $_POST["EditBookView::Title"];
+		} else {
+			return "";
+		}
+	}
+
+	public function getRequestDescription() : string {
+		if (isset($_POST["EditBookView::Description"])) {
+			return $_POST["EditBookView::Description"];
+		} else {
+			return "";
+		}
+	}
+
+	public function getRequestBookId() : string {
+		if (isset($_POST["EditBookView::BookId"])) {
+			return $_POST["EditBookView::BookId"];
+		} else {
+			return "";
+		}
+	}
+
+	public function getQueryBookId() {
+		if (isset($_GET["editbookid"])) {
+			return $_GET["editbookid"];
+		} else  {
+		return "";
+		}
+	} 
+
+	public function getUser() : string {
+		if (isset($_SESSION["username"])) {
+			return $_SESSION["username"];
+		} else {
+			return "";
+		}
+	}
 }

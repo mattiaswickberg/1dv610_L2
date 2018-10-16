@@ -3,8 +3,7 @@
 namespace View;
 class DateTimeView {
 
-
-	public function show() 
+	public function show() : string
 	{
 
 		$timeString = date("l") . ', the ' . date("jS") . ' of ' . date("F") . ' ' . date("Y") .', The time is ' . date("h:i:s");

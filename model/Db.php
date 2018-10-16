@@ -82,7 +82,6 @@ class Database {
   }
 
   public function deleteBook($user, $id) {
-    echo "Deleting stuff " . $user . " with bookid: " . $id;
     $stmt = $this->conn->prepare("DELETE FROM 1dv607_books WHERE user = :username AND bookid = :bookid");
     $stmt->bindParam(':username', $user, \PDO::PARAM_STR);
     $stmt->bindParam(':bookid', $id, \PDO::PARAM_STR);
