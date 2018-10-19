@@ -1,13 +1,14 @@
 <?php
 namespace Controller;
 
-class Main {
+require_once($_SERVER["DOCUMENT_ROOT"] . '/model/Exceptions.php');
 
+class Main {
   /*
    * Initiate variables
    *  
    */
-  private $message = '';
+
   private $isLoggedIn = false;
   private $showRegister = false;
 
@@ -15,17 +16,17 @@ class Main {
    * Main controller function for page, to check login status.
    * 
    */
-  public function Start(\View\LayoutView $LayoutView, \View\LoginView $LoginView, \View\DateTimeView $DateTimeView, \View\RegisterView $RegisterView, \View\BooksView $BooksView, \View\AddBookView $AddBookView, \Model\Register $register , \Model\Database $db, \Controller\CheckCredentialsController $CheckCredentials, \Controller\BooksController $BooksController, \View\EditBookView $EditBookView) 
+  public function Start(\View\LayoutView $LayoutView, \View\LoginView $LoginView, \View\DateTimeView $DateTimeView, \View\RegisterView $RegisterView, \View\BooksView $BooksView, \View\AddBookView $AddBookView, \Model\Register $register , \Model\Database $db, \Model\CheckCredentials $CheckCredentials, \Controller\BooksController $BooksController, \View\EditBookView $EditBookView) 
   {
-    $this->message = '';
+    $LayoutView->NoMessage();
     if ($LoginView->getRequestLogout()) //if user clicks logout, call corresponding function
     {
-      $this->Logout($LoginView);
+      $this->Logout($LoginView, $LayoutView);
     }
     if($LoginView->getSessionStatus()) // If user is logged in, set variable to true and call controller for page's main function
     {
       $this->isLoggedIn = true;
-      $this->message = "";
+      $LayoutView->NoMessage();
       $BooksController->Books($db, $BooksView, $AddBookView, $EditBookView);  
     }
     else //if user is not logged in, call function to handle logins and registrations
@@ -33,7 +34,7 @@ class Main {
       $this->NotLoggedIn($LayoutView, $LoginView, $DateTimeView, $RegisterView, $BooksView, $AddBookView, $register, $db, $CheckCredentials, $BooksController, $EditBookView);
     }
     //Call main View to render page     
-    $LayoutView->render($this->isLoggedIn, $this->showRegister, $this->message, $LoginView, $DateTimeView, $RegisterView, $BooksView, $AddBookView, $EditBookView);   
+    $LayoutView->render($this->isLoggedIn, $this->showRegister, $LoginView, $DateTimeView, $RegisterView, $BooksView, $AddBookView, $EditBookView);   
   }
 
   /*
@@ -50,25 +51,30 @@ class Main {
     {
       try
       {
-        $this->Login($CheckCredentials, $db, $LoginView);
+        $this->Login($CheckCredentials, $db, $LoginView, $LayoutView);
         $BooksController->Books($db, $BooksView, $AddBookView, $EditBookView); // If login succeeds, call controller for page's main functionality
       }
-      catch (\Exception $e)
-      {
-        $this->message = $e->getMessage();
-        $LoginView->setUserName($LoginView->getRequestUserName()); // If something went wrong, make sure username field is stilled filled out
-      }      
+      catch (\Model\WrongNameOrPassword $e) {
+        $LayoutView->WrongNameOrPassword();
+      }
+      catch (\Model\UsernameMissing $e) {
+        $LayoutView->UsernameMissing();
+      }
+      catch (\Model\PasswordMissing $e) {
+        $LayoutView->PasswordMissing();
+      }
+      $LoginView->setUserName($LoginView->getRequestUserName()); // If something went wrong, make sure username field is stilled filled out      
     } 
     else if ($RegisterView->getRequestRegister()) // If user sends in registration form, try to register new account
     {
-      $this->Register($CheckCredentials, $register, $db, $RegisterView);
+      $this->Register($CheckCredentials, $register, $db, $RegisterView, $LayoutView);
       $RegisterView->setUserName(\strip_tags($RegisterView->getRequestUserName()));
       $LoginView->setUserName($RegisterView->getRequestUserName()); // Fill in user's new username in login form
     }   
     }
   }
 
-  private function Logout($LoginView) // If user clicks logout, and there is a session active, unset session and set logged in variable
+  private function Logout($LoginView, $LayoutView) // If user clicks logout, and there is a session active, unset session and set logged in variable
   {
     if(!$LoginView->getSessionStatus()) {
       $this->message = "";
@@ -77,30 +83,29 @@ class Main {
     { 
       $this->isLoggedIn = false;
       session_unset();
-      $this->message = "Bye bye!";
+      $LayoutView->LogoutMessage();
     }    
   }
 
   /**
    * If user wants login, call function to check credentials, and 
    */
-  private function Login($CheckCredentials, $db, $LoginView)
+  private function Login($CheckCredentials, $db, $LoginView, $LayoutView)
   {
     $username = $LoginView->getRequestUserName();
     $password = $LoginView->getRequestPassword();
-    echo $username . $password;
 
-    $CheckCredentials->CheckLogin($username, $password);
+    $CheckCredentials->CheckLogin($username, $password, $LoginView);
     $user = $db->getUser($username);
     if($user) 
     {
       if($password != $user[0]["password"]) 
       {
-        throw new \Exception("Wrong name or password");  
+        throw new \Model\WrongNameOrPassword();  
       } else 
       {
         $this->isLoggedIn = true;
-        $this->message = "Welcome";
+        $LayoutView->SuccessfulLogin();
         $_SESSION["username"] = $username;
       }
     }
@@ -109,20 +114,34 @@ class Main {
 /**
  * If user clicks to register account, check credentials, and if they check out send info to register class
  */  
-  private function Register($CheckCredentials, $register, $db, $RegisterView) 
+  private function Register($CheckCredentials, $register, $db, $RegisterView, $LayoutView) 
   {
     try {
       $username = $RegisterView->getRequestUserName();
       $password = $RegisterView->getRequestPassword();
       $passwordRepeat = $RegisterView->getRequestPasswordRepeat();
-      $CheckCredentials->Checkregister($username, $password, $passwordRepeat);
-      $register->RegisterNewUser($username, $password,$db);
+      $CheckCredentials->Checkregister($username, $password, $passwordRepeat, $RegisterView);
+      $register->RegisterNewUser($username, $password,$db, $RegisterView);
       $this->showRegister = false;
-      $this->message = "Registered new user.";
+      $LayoutView->SuccessfulRegistration();
     }
-    catch (\Exception $e)
-    {
-      $this->message = $e->getMessage();
+    catch (\Model\ShortUsernameAndPassword $e) {
+      $LayoutView->ShortUsernameAndPassword();
     }
+    catch (\Model\ShortUsername $e) {
+      $LayoutView->ShortUsername();
+    } 
+    catch (\Model\ShortPassword $e) {
+      $LayoutView->ShortPassword();
+    } 
+    catch (\Model\UserExists $e) {
+      $LayoutView->UserExists();
+    } 
+    catch (\Model\InvalidCharacters $e) {
+      $LayoutView->InvalidCharacters();
+    } 
+    catch (\Model\PasswordsNotMatch $e) {
+      $LayoutView->PasswordsNotMatch();
+    }     
   } 
 }

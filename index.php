@@ -8,12 +8,11 @@ require_once('view/RegisterView.php');
 require_once('view/BooksView.php');
 require_once('view/AddBookView.php');
 require_once('view/EditBookView.php');
-require_once('controller/CheckCredentialsController.php');
 require_once('controller/MainController.php');
 require_once('controller/BooksController.php');
+require_once('model/CheckCredentials.php');
 require_once('model/Db.php');
 require_once('model/Register.php');
-
 
 //MAKE SURE ERRORS ARE SHOWN... MIGHT WANT TO TURN THIS OFF ON A PUBLIC SERVER
 error_reporting(E_ALL);
@@ -31,10 +30,10 @@ $LayoutView = new \View\LayoutView();
 $config = include("config.php");
 $db = new \Model\Database($config);
 $register = new \Model\Register();
+$CheckCredentials = new \Model\CheckCredentials();
 
 $BooksController = new \Controller\BooksController();
 $Main = new \Controller\Main();
-$CheckCredentials = new \Controller\CheckCredentialsController();
 
 session_start();
 

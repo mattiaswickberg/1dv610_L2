@@ -7,12 +7,12 @@ class Register {
   private $isLoggedIn = false;
   private $showRegister = true;
 
-  public function RegisterNewUser($username, $password, Database $db) 
+  public function RegisterNewUser($username, $password, Database $db, \View\RegisterView $RegisterView) 
   {  
    
-      $user = $db->getUser($_POST["RegisterView::UserName"]);
+      $user = $db->getUser($RegisterView->getRequestUserName());
       if ($user) {
-        throw new \Exception("User exists, pick another username.");
+        throw new \Model\UserExists();
       } else {
         $addUser = $db->AddUser($username, $password);      
     }    

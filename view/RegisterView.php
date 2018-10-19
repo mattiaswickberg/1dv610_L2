@@ -9,6 +9,7 @@ class RegisterView {
   private static $passwordRepeat = 'RegisterView::PasswordRepeat';
 	private static $messageId = 'RegisterView::Message';
 	private $username = "";
+	private $message = "";
 
 
 	/**
@@ -21,7 +22,6 @@ class RegisterView {
 	public function response($message) {
 			
 		$response = $this->generateRegisterFormHTML($message);
-		//$response .= $this->generateLogoutButtonHTML($message);
 		return $response;
 	}
 
@@ -51,6 +51,10 @@ class RegisterView {
 			</form>
 		';
 	}
+
+	// Functions to set message
+	
+
 
 	// Get request variables
 

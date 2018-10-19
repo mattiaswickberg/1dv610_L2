@@ -61,8 +61,8 @@ class LoginView {
 				</fieldset>
 			</form>
 		';
-	}
-	
+	}	
+
 	//CREATE GET-FUNCTIONS TO FETCH REQUEST VARIABLES
 	public function getRequestUserName() : string {
 		if (isset($_POST["LoginView::UserName"]))
