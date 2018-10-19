@@ -4,6 +4,7 @@ namespace View;
 class LayoutView {
   private $message = "";
   
+  // Render basic layout for page
   public function render($isLoggedIn, $showRegister, LoginView $LoginView, DateTimeView $DateTimeView, registerView $RegisterView, \View\BooksView $BooksView, \View\AddBookView $AddBookView, \View\EditBookView $EditBookView) {
     echo '<!DOCTYPE html>
       <html>
@@ -26,6 +27,7 @@ class LayoutView {
     ';
   }
   
+  // return string based on user's login status
   private function renderIsLoggedIn($isLoggedIn) {
     if ($isLoggedIn) {
       return '<h2>Logged in</h2>';
@@ -35,6 +37,7 @@ class LayoutView {
     }
   }
 
+  // return html link for either register user or back to main page
   private function registerUser($showRegister, $LoginView , $RegisterView, $isLoggedIn) {
     $response = '';
     if ($showRegister) {
@@ -48,6 +51,7 @@ class LayoutView {
     return $response;
   }
 
+  // If user is logged in, render views for books
   private function showBooks($isLoggedIn, $BooksView, $AddBookView, $EditBookView) {
         if($isLoggedIn) {
           return  ' <div> <h3>Add new book: </h3>' 
@@ -58,8 +62,6 @@ class LayoutView {
           return '';
         }
   }
-
-  // Functions to set message
 
   // Function to remove message
 	public function NoMessage() {
@@ -80,7 +82,6 @@ class LayoutView {
   }
 
   // Error messages
-
 	public function WrongNameOrPassword() {
 		$this->message = "Wrong name or password";
   }

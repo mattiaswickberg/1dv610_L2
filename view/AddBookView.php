@@ -9,13 +9,14 @@ class AddBookView {
 	private static $description = 'AddBookView::Description';
 
 	/**
-	 * 
+	 * Render form
 	 */
 	public function render() : string {
 		$response = $this->generateAddBookFormHTML();
 		return $response;
 	}
 	
+	// Generate HTML for adding new books
 	private function generateAddBookFormHTML() {
 		return '
 			<form method="post" > 

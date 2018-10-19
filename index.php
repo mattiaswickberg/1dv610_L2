@@ -35,8 +35,10 @@ $CheckCredentials = new \Model\CheckCredentials();
 $BooksController = new \Controller\BooksController();
 $Main = new \Controller\Main();
 
+// Start session
 session_start();
 
+// Call main controller and inject needed classes
 $Main->Start($LayoutView, $LoginView, $DayTimeView, $RegisterView, $BooksView, $AddBookView, $register, $db, $CheckCredentials, $BooksController, $EditBookView);
 
 

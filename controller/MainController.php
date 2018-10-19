@@ -112,7 +112,8 @@ class Main {
   }
 
 /**
- * If user clicks to register account, check credentials, and if they check out send info to register class
+ * If user clicks to register account, check credentials, and if they check out send info to register class. 
+ * If exception is cast, catch the exception and calöl corresponding function in view to set message for user.
  */  
   private function Register($CheckCredentials, $register, $db, $RegisterView, $LayoutView) 
   {

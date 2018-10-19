@@ -6,14 +6,17 @@ class BooksView{
   private $Books = array();
   private $bookToEdit;
 
+  // public function for controller to call to set which book should edited
   public function setBookToEdit($book) {
     $this->bookToEdit = $book;
   }
 
+  // Public function for controller to set book array so that this view can render the books already in the user's database
   public function setBooks($books) {
     $this->Books = $books;
   }
 
+  // Render view with books added, or call EditBookView
   public function render($EditBookView) : string {
     $response = '';
 

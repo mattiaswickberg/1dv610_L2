@@ -15,6 +15,7 @@ class EditBookView {
 		return $response;
 	}
 	
+	// Generate html for form to edit eisting book
 	private function generateEditBookFormHTML($book) {
 		return '
 			<form method="post" action="index.php"> 

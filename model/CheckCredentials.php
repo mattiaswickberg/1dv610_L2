@@ -1,12 +1,19 @@
 <?php
 namespace Model;
 
-require_once($_SERVER["DOCUMENT_ROOT"] . '/model/Exceptions.php');
-
+/** 
+ * Model class to check credentials for registration and login, before checking against database
+ * If credentials don't check out, throw corresponding custom exception
+ */
 class CheckCredentials
 {
+  // Variables for username and password rules. 
+  private $minUserLength = 3;
+  private $minPasswordLength = 5;
+
+  // Function for Registration check
   public function CheckRegister($username, $password, $passwordRepeat,$RegisterView) 
-  {  
+  {
     if (!$this->CheckUsernameLength($username) && !$this->CheckPasswordLength($password))
     {
       throw new \Model\ShortUsernameAndPassword;
@@ -20,7 +27,7 @@ class CheckCredentials
     {
       throw new \Model\ShortPassword;
     }
-
+    // Check if username contains something other than alphanumeric characters
     if (!\ctype_alnum($RegisterView->getRequestUserName())) 
     {
       throw new \Model\InvalidCharacters;
@@ -31,6 +38,7 @@ class CheckCredentials
     }
   }
 
+  // Function for Login check
   public function CheckLogin($username, $password, $LoginView) 
   {
     if(strlen($username) == 0) 
@@ -44,15 +52,11 @@ class CheckCredentials
   }
 
   private function CheckUsernameLength($username):bool {
-    return (strlen($username) > 2);
+    return (strlen($username) >= $this->minUserLength);
   }
 
   private function CheckPasswordLength($password) : bool {
-    return (strlen($password) > 5);
-  }
-
-  private function HasInvalidCharacters($username):  bool {
-    return !\ctype_alnum($username);
+    return (strlen($password) >= $this->minPasswordLength);
   }
 
   private function PasswordsMatch($password, $passwordRepeat) {

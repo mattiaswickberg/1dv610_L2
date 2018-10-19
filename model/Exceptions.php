@@ -2,6 +2,7 @@
 
 namespace Model;
 
+// Create custom exceptions for common errors in user input
 class ShortUsernameAndPassword extends \Exception {
 
 }

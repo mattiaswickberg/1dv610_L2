@@ -1,7 +1,9 @@
 <?php
 
 namespace Controller;
-
+/**
+ * Controller class for user interactions that has to do with adding, editing and deleting books
+ */
 class BooksController {
 
   public function Books(\Model\Database $db, \View\BooksView $BooksView, \View\AddBookView $AddBookView, \View\EditBookView $EditBookView) {
@@ -21,10 +23,12 @@ class BooksController {
     $BooksView->setBooks($this->getBooks($db, $EditBookView));
   }
 
+  // Retrieving books from database
   public function getBooks($db, $EditBookView) : array {
     return $db->getBooksFromUser($EditBookView->getUser());
   }
 
+  // Identify the book with the highest id in the database,then increase that id one point to provide a unique id for a new book. 
   private function getHighestId($books) : int {
     $id = 0;
     foreach ($books as $b) {
@@ -35,6 +39,7 @@ class BooksController {
     return $id;
   }
 
+  // Get id for new book and send it to the database for storage
   private function addBookToDatabase($db, $EditBookView, $AddBookView) {
     // getBookId
     $id = $this->getHighestId($this->getBooks($db, $EditBookView));
