@@ -74,7 +74,7 @@ class Database {
     $stmt->bindParam(':bookid', $id, \PDO::PARAM_STR);
     $stmt->execute();
 
-    $result = $this->stmt->fetchAll();
+    $result = $stmt->fetchAll();
     return($result);
   }
 
