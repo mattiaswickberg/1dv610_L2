@@ -51,4 +51,4 @@ User is authenticated.
 4. System deletes book and loads main page with remaining books.
 
 # System development status
-All main scenarios implemented and tested. Alternate scenarios not implemented at this stage, 
+All main scenarios implemented and tested. Alternate scenarios implemented, but message should be moved to a better location. 
