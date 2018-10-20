@@ -21,7 +21,6 @@ class EditBookView {
 			<form method="post" action="index.php"> 
 				<fieldset>
           <legend> Edit book - make your desired changes and press "Save changes" </legend>	
-          
           <label for="' . self::$bookId . '">Book Id:</label>
           <input type="text" id="' . self::$bookId . '" name="' . self::$bookId . '" readonly value="' . $book["bookid"] . '" />
           

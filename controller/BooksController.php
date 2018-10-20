@@ -9,13 +9,25 @@ class BooksController {
   public function Books(\Model\Database $db, \View\BooksView $BooksView, \View\AddBookView $AddBookView, \View\EditBookView $EditBookView) {
     if ($AddBookView->getAddBookStatus()) 
     {
-      $this->addBookToDatabase($db, $EditBookView, $AddBookView);
+      try {
+        $this->CheckBookData($AddBookView->getRequestAuthor(), $AddBookView->getRequestTitle());
+        $this->addBookToDatabase($db, $EditBookView, $AddBookView);
+      }
+      catch (\Model\NoTitleOrAuthor $e) {
+        $BooksView->NoAuthorOrTitle();
+      }
     }
     if ($EditBookView->getIsEditActive()) {
       $BooksView->setBookToEdit(($db->getBookById($EditBookView->getUser(), $EditBookView->getQueryBookId()))[0]);
     }
     if ($EditBookView->getEditStatus()) {
-      $db->updateBook($EditBookView->getUser(), $EditBookView->getRequestBookId(), $EditBookView->getRequestAuthor(), $EditBookView->getRequestTitle(), $EditBookView->getRequestDescription());
+      try {
+        $this->CheckBookData($AddBookView->getRequestAuthor(), $AddBookView->getRequestTitle());
+        $db->updateBook($EditBookView->getUser(), $EditBookView->getRequestBookId(), $EditBookView->getRequestAuthor(), $EditBookView->getRequestTitle(), $EditBookView->getRequestDescription());
+      }
+      catch (\Model\NoTitleOrAuthor $e) {
+        $BooksView->NoAuthorOrTitle();
+      }
     }
     if ($EditBookView->getDeleteStatus()) {
       $db->deleteBook($EditBookView->getUser(), $EditBookView->getRequestBookId());
@@ -47,4 +59,10 @@ class BooksController {
     // add book to database
     $db->addBook($EditBookView->getUser(), $AddBookView->getRequestAuthor(), $AddBookView->getRequestTitle(), $AddBookView->getRequestDescription(), $id);
   }  
+
+  private function CheckBookData($author, $title) {
+    if (strlen($author) == 0 || strlen($title) == 0) {
+      throw new \Model\NoTitleOrAuthor();
+    }
+  }
 }

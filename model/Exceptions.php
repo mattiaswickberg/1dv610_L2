@@ -38,3 +38,7 @@ class UsernameMissing extends \Exception {
 class PasswordMissing extends \Exception {
 
 }
+
+class NoTitleOrAuthor extends \Exception {
+  
+}

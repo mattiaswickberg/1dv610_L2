@@ -54,10 +54,10 @@ class LayoutView {
   // If user is logged in, render views for books
   private function showBooks($isLoggedIn, $BooksView, $AddBookView, $EditBookView) {
         if($isLoggedIn) {
-          return  ' <div> <h3>Add new book: </h3>' 
-          . $AddBookView->render() . ' </div>' . 
-          '<h1>Registered Books:</h1> '
-          . ' <div> '. $BooksView->render($EditBookView) . ' </div> ' ;
+          return '<h1>Registered Books:</h1> '
+          . ' <div> '. $BooksView->render($EditBookView) . ' </div> '
+          . ' <div> <h3>Add new book: </h3>' 
+          . $AddBookView->render() . ' </div>' ;
         } else {
           return '';
         }

@@ -21,7 +21,7 @@ class AddBookView {
 		return '
 			<form method="post" > 
 				<fieldset>
-					<legend> Add new book - Enter at least author and title </legend>					
+					<legend> Add new book - Enter at least author and title </legend>
 					<label for="' . self::$author . '">Author :</label>
 					<input type="text" id="' . self::$author . '" name="' . self::$author . '" value="' . '" />
 
@@ -65,5 +65,5 @@ class AddBookView {
 			} else {
 				return "";
 			}
-		}
+		}		
 }

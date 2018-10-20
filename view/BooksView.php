@@ -5,6 +5,7 @@ namespace View;
 class BooksView{
   private $Books = array();
   private $bookToEdit;
+  private $message = '';
 
   // public function for controller to call to set which book should edited
   public function setBookToEdit($book) {
@@ -18,7 +19,7 @@ class BooksView{
 
   // Render view with books added, or call EditBookView
   public function render($EditBookView) : string {
-    $response = '';
+    $response = '<h3> ' . $this->message . '</h3>';
 
     if (isset($this->bookToEdit)) {
       $response = $EditBookView->render($this->bookToEdit);
@@ -35,4 +36,8 @@ class BooksView{
     return $response;
   }
 
+  // Function to set message for user
+  public function NoAuthorOrTitle() {
+    $this->message = "Please enter at least an author and a title!";
+  }
 }
