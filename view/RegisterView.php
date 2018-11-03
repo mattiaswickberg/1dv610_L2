@@ -19,7 +19,7 @@ class RegisterView {
 	 *
 	 * @return  void BUT writes to standard output and cookies!
 	 */
-	public function response($message) {
+	public function response(string $message) : string {
 			
 		$response = $this->generateRegisterFormHTML($message);
 		return $response;
@@ -30,7 +30,7 @@ class RegisterView {
 	* @param $message, String output message
 	* @return  void, BUT writes to standard output!
 	*/
-	private function generateRegisterFormHTML($message) {
+	private function generateRegisterFormHTML(string $message) : string {
 		return '
 			<form method="post" > 
 				<fieldset>
@@ -90,7 +90,7 @@ class RegisterView {
 		}
 	}
 
-	public function setUserName($username) {
+	public function setUserName(string $username) {
 		$this->username = $username;
 	}
 }

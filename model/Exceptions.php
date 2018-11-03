@@ -42,3 +42,7 @@ class PasswordMissing extends \Exception {
 class NoTitleOrAuthor extends \Exception {
   
 }
+
+class BookNotFound extends \Exception {
+  
+}

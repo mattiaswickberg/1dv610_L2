@@ -18,7 +18,7 @@ class LoginView {
 	 *
 	 * @return  void BUT writes to standard output and cookies!
 	 */
-	public function response($message, $isLoggedIn) {
+	public function response(string $message, bool $isLoggedIn) : string {
 		$response = '<p id="' . self::$messageId . '">' . $message . '</p>';
 		if (!$isLoggedIn) {
 			$response .= $this->generateLoginFormHTML($message);
@@ -32,7 +32,7 @@ class LoginView {
 	* @param $message, String output message
 	* @return  void, BUT writes to standard output!
 	*/
-	private function generateLogoutButtonHTML($message) {
+	private function generateLogoutButtonHTML(string $message) : string {
 		return '
 			<form  method="post" >
 				<input type="submit" name="' . self::$logout . '" value="logout"/>
@@ -45,7 +45,7 @@ class LoginView {
 	* @param $message, String output message
 	* @return  void, BUT writes to standard output!
 	*/
-	private function generateLoginFormHTML($message) {
+	private function generateLoginFormHTML(string $message) : string{
 		return '
 			<form method="post" > 
 				<fieldset>
@@ -73,7 +73,7 @@ class LoginView {
 		}				
 	}
 
-	public function getRequestPassword() {
+	public function getRequestPassword() : string {
 		if (isset($_POST["LoginView::Password"]))
 		{
 			return $_POST["LoginView::Password"];
@@ -90,11 +90,7 @@ class LoginView {
 		return isset($_POST["LoginView::Login"]);
 	}
 
-	public function getSessionStatus() : bool {
-		return isset($_SESSION["username"]);
-	}
-
-	public function setUserName($username) {
+	public function setUserName(string $username) {
 		$this->username = $username;
 	}
 }

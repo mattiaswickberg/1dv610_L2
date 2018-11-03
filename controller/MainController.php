@@ -11,92 +11,113 @@ class Main {
 
   private $isLoggedIn = false;
   private $showRegister = false;
+  private $LayoutView;
+  private $LoginView;
+  private $RegisterView;
+  private $Register;
+  private $Database;
+  private $CheckCredentials;
+  private $BooksController;
+  private $Session;
+
+
+  public function __construct(\View\LayoutView $layoutView, \View\LoginView $loginView, \View\RegisterView $registerView, \Model\Register $register , \Model\Database $db, \Model\CheckCredentials $checkCredentials, \Controller\BooksController $booksController, \View\Session $session)
+  {
+    $this->LayoutView = $layoutView;
+    $this->LoginView = $loginView;
+    $this->RegisterView = $registerView;
+    $this->Register = $register;
+    $this->Database = $db;
+    $this->CheckCredentials = $checkCredentials;
+    $this->BooksController = $booksController;
+    $this->Session = $session;
+  }
 
   /* 
    * Main controller function for page, to check login status.
    * 
    */
-  public function Start(\View\LayoutView $LayoutView, \View\LoginView $LoginView, \View\DateTimeView $DateTimeView, \View\RegisterView $RegisterView, \View\BooksView $BooksView, \View\AddBookView $AddBookView, \Model\Register $register , \Model\Database $db, \Model\CheckCredentials $CheckCredentials, \Controller\BooksController $BooksController, \View\EditBookView $EditBookView) 
+  public function Start() 
   {
-    $LayoutView->NoMessage();
-    if ($LoginView->getRequestLogout()) //if user clicks logout, call corresponding function
+    $this->LayoutView->NoMessage();
+    if ($this->LoginView->getRequestLogout()) //if user clicks logout, call corresponding function
     {
-      $this->Logout($LoginView, $LayoutView);
+      $this->Logout();
     }
-    if($LoginView->getSessionStatus()) // If user is logged in, set variable to true and call controller for page's main function
+    if($this->Session->getSessionStatus()) // If user is logged in, set variable to true and call controller for page's main function
     {
       $this->isLoggedIn = true;
-      $LayoutView->NoMessage();
-      $BooksController->Books($db, $BooksView, $AddBookView, $EditBookView);  
+      $this->LayoutView->NoMessage();
+      $this->BooksController->Books();  
     }
     else //if user is not logged in, call function to handle logins and registrations
     {
-      $this->NotLoggedIn($LayoutView, $LoginView, $DateTimeView, $RegisterView, $BooksView, $AddBookView, $register, $db, $CheckCredentials, $BooksController, $EditBookView);
+      $this->NotLoggedIn();
     }
     //Call main View to render page     
-    $LayoutView->render($this->isLoggedIn, $this->showRegister, $LoginView, $DateTimeView, $RegisterView, $BooksView, $AddBookView, $EditBookView);   
+    $this->LayoutView->render($this->isLoggedIn, $this->showRegister);   
   }
 
   /*
   * Function to handle login attempts and user registrations 
   */
-  private function NotLoggedIn($LayoutView, $LoginView, $DateTimeView, $RegisterView, $BooksView, $AddBookView, $register, $db, $CheckCredentials, $BooksController, $EditBookView) {
+  private function NotLoggedIn() {
     {
-      if ($RegisterView->getRegisterStatus()) // If user clicks on register new account, show form to register
+      if ($this->RegisterView->getRegisterStatus()) // If user clicks on register new account, show form to register
       {
       $this->showRegister = true;
     }
 
-    if ($LoginView->getRequestLogin()) // If user tries to login, call function to check credentials
+    if ($this->LoginView->getRequestLogin()) // If user tries to login, call function to check credentials
     {
       try
       {
-        $this->Login($CheckCredentials, $db, $LoginView, $LayoutView);
-        $BooksController->Books($db, $BooksView, $AddBookView, $EditBookView); // If login succeeds, call controller for page's main functionality
+        $this->Login();
+        $this->BooksController->Books(); // If login succeeds, call controller for page's main functionality
       }
       catch (\Model\WrongNameOrPassword $e) {
-        $LayoutView->WrongNameOrPassword();
+        $this->LayoutView->WrongNameOrPassword();
       }
       catch (\Model\UsernameMissing $e) {
-        $LayoutView->UsernameMissing();
+        $this->LayoutView->UsernameMissing();
       }
       catch (\Model\PasswordMissing $e) {
-        $LayoutView->PasswordMissing();
+        $this->LayoutView->PasswordMissing();
       }
-      $LoginView->setUserName($LoginView->getRequestUserName()); // If something went wrong, make sure username field is stilled filled out      
+      $this->LoginView->setUserName($this->LoginView->getRequestUserName()); // If something went wrong, make sure username field is stilled filled out      
     } 
-    else if ($RegisterView->getRequestRegister()) // If user sends in registration form, try to register new account
+    else if ($this->RegisterView->getRequestRegister()) // If user sends in registration form, try to register new account
     {
-      $this->Register($CheckCredentials, $register, $db, $RegisterView, $LayoutView);
-      $RegisterView->setUserName(\strip_tags($RegisterView->getRequestUserName()));
-      $LoginView->setUserName($RegisterView->getRequestUserName()); // Fill in user's new username in login form
+      $this->RegisterUser();
+      $this->RegisterView->setUserName(\strip_tags($this->RegisterView->getRequestUserName()));
+      $this->LoginView->setUserName($this->RegisterView->getRequestUserName()); // Fill in user's new username in login form
     }   
     }
   }
 
-  private function Logout($LoginView, $LayoutView) // If user clicks logout, and there is a session active, unset session and set logged in variable
+  private function Logout() // If user clicks logout, and there is a session active, unset session and set logged in variable
   {
-    if(!$LoginView->getSessionStatus()) {
+    if(!$this->Session->getSessionStatus()) {
       $this->message = "";
     } 
     else 
     { 
       $this->isLoggedIn = false;
       session_unset();
-      $LayoutView->LogoutMessage();
+      $this->LayoutView->LogoutMessage();
     }    
   }
 
   /**
    * If user wants login, call function to check credentials, and 
    */
-  private function Login($CheckCredentials, $db, $LoginView, $LayoutView)
+  private function Login()
   {
-    $username = $LoginView->getRequestUserName();
-    $password = $LoginView->getRequestPassword();
+    $username = $this->LoginView->getRequestUserName();
+    $password = $this->LoginView->getRequestPassword();
 
-    $CheckCredentials->CheckLogin($username, $password, $LoginView);
-    $user = $db->getUser($username);
+    $this->CheckCredentials->CheckLogin($username, $password);
+    $user = $this->Database->getUser($username);
     if($user) 
     {
       if($password != $user[0]["password"]) 
@@ -105,9 +126,13 @@ class Main {
       } else 
       {
         $this->isLoggedIn = true;
-        $LayoutView->SuccessfulLogin();
-        $_SESSION["username"] = $username;
+        $this->LayoutView->SuccessfulLogin();
+        $this->Session->setUser($username);
       }
+    }
+    else 
+    {
+      throw new \Model\WrongNameOrPassword();
     }
   }
 
@@ -115,34 +140,34 @@ class Main {
  * If user clicks to register account, check credentials, and if they check out send info to register class. 
  * If exception is cast, catch the exception and calöl corresponding function in view to set message for user.
  */  
-  private function Register($CheckCredentials, $register, $db, $RegisterView, $LayoutView) 
+  private function RegisterUser() 
   {
     try {
-      $username = $RegisterView->getRequestUserName();
-      $password = $RegisterView->getRequestPassword();
-      $passwordRepeat = $RegisterView->getRequestPasswordRepeat();
-      $CheckCredentials->Checkregister($username, $password, $passwordRepeat, $RegisterView);
-      $register->RegisterNewUser($username, $password,$db, $RegisterView);
+      $username = $this->RegisterView->getRequestUserName();
+      $password = $this->RegisterView->getRequestPassword();
+      $passwordRepeat = $this->RegisterView->getRequestPasswordRepeat();
+      $this->CheckCredentials->Checkregister($username, $password, $passwordRepeat);
+      $this->Register->RegisterNewUser($username, $password);
       $this->showRegister = false;
-      $LayoutView->SuccessfulRegistration();
+      $this->LayoutView->SuccessfulRegistration();
     }
     catch (\Model\ShortUsernameAndPassword $e) {
-      $LayoutView->ShortUsernameAndPassword();
+      $this->LayoutView->ShortUsernameAndPassword();
     }
     catch (\Model\ShortUsername $e) {
-      $LayoutView->ShortUsername();
+      $this->LayoutView->ShortUsername();
     } 
     catch (\Model\ShortPassword $e) {
-      $LayoutView->ShortPassword();
+      $this->LayoutView->ShortPassword();
     } 
     catch (\Model\UserExists $e) {
-      $LayoutView->UserExists();
+      $this->LayoutView->UserExists();
     } 
     catch (\Model\InvalidCharacters $e) {
-      $LayoutView->InvalidCharacters();
+      $this->LayoutView->InvalidCharacters();
     } 
     catch (\Model\PasswordsNotMatch $e) {
-      $LayoutView->PasswordsNotMatch();
+      $this->LayoutView->PasswordsNotMatch();
     }     
   } 
 }

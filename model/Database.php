@@ -10,9 +10,11 @@ class Database {
   private $dbPassword = "";
   private $dbname = "";
   private $conn;
+  private $Session;
 
   // Constructor that sets variables from config file, and sets up basic connection.
-  public function __construct($config) {
+  public function __construct(array $config, \View\Session $session) {
+    $this->Session = $session;
     $this->servername = $config["servername"];
     $this->dbUsername = $config["dbUsername"];
     $this->dbPassword = $config["dbPassword"];
@@ -22,7 +24,7 @@ class Database {
   } 
 
   // Add new user to database
-  public function AddUser($usernameToRegister, $passwordToRegister) {
+  public function AddUser(string $usernameToRegister, string $passwordToRegister) {
     $stmt = $this->conn->prepare("INSERT INTO 1dv607_users (username, password) VALUES (:username, :password)");
     $stmt->bindParam(':username', $usernameToRegister);
     $stmt->bindParam(':password', $passwordToRegister);
@@ -31,7 +33,7 @@ class Database {
   }
 
   // Fetch a user from database
-  public function getUser($user) {
+  public function getUser(string $user) {
     $stmt = $this->conn->prepare("SELECT username, password FROM 1dv607_users WHERE username = :username");
     $stmt->bindParam(':username', $user, \PDO::PARAM_STR);
     $stmt->execute();
@@ -41,9 +43,10 @@ class Database {
   }
 
   // Fetch books for a specific user
-  public function getBooksFromUser($user) {
+  public function getBooksFromUser() : array {
+    $user = $this->Session->getUser();
     $stmt = $this->conn->prepare("SELECT user, author, title, description, bookid FROM 1dv607_books WHERE user = :username");
-    $stmt->bindParam(':username', $user, \PDO::PARAM_STR);
+    $stmt->bindParam(':username', $user , \PDO::PARAM_STR);
     $stmt->execute();
 
     $result = $stmt->fetchAll();
@@ -51,7 +54,8 @@ class Database {
   }
 
   // Add a book for a user
-  public function addBook($user, $author, $title, $description, $bookid) {
+  public function addBook(string $author, string $title, string $description, string $bookid) {
+    $user = $this->Session->getUser();
     try {
       $stmt = $this->conn->prepare("INSERT INTO 1dv607_books (user, author, title, description, bookid) VALUES (:user, :author, :title, :description, :bookid)");
       $stmt->bindParam(':user', $user);
@@ -68,7 +72,8 @@ class Database {
   }
 
   // Fetch a book by id
-  public function getBookById($user, $id) {
+  public function getBookById(int $id) {
+    $user = $this->Session->getUser();
     $stmt = $this->conn->prepare("SELECT user, author, title, description, bookid FROM 1dv607_books WHERE user = :username AND bookid = :bookid");
     $stmt->bindParam(':username', $user, \PDO::PARAM_STR);
     $stmt->bindParam(':bookid', $id, \PDO::PARAM_STR);
@@ -79,7 +84,13 @@ class Database {
   }
 
   // Update specific book
-  public function updateBook($user, $id, $author, $title, $description) {
+  public function updateBook(\Model\Book $book) {
+    $user = $this->Session->getUser(); //get current user from session
+    $id = $book->getId();
+    $author = $book->getAuthor();
+    $title = $book->getTitle();
+    $description = $book->getDescription();
+
     $stmt = $this->conn->prepare("UPDATE 1dv607_books SET author = :author, title = :title, description = :description WHERE user = :username AND bookid = :bookid");
     $stmt->bindParam(':username', $user, \PDO::PARAM_STR);
     $stmt->bindParam(':bookid', $id, \PDO::PARAM_STR);
@@ -90,7 +101,8 @@ class Database {
   }
 
   // Delete a book by id
-  public function deleteBook($user, $id) {
+  public function deleteBook(int $id) {
+    $user = $this->Session->getUser();
     $stmt = $this->conn->prepare("DELETE FROM 1dv607_books WHERE user = :username AND bookid = :bookid");
     $stmt->bindParam(':username', $user, \PDO::PARAM_STR);
     $stmt->bindParam(':bookid', $id, \PDO::PARAM_STR);

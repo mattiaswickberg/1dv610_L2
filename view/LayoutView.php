@@ -3,9 +3,19 @@
 namespace View;
 class LayoutView {
   private $message = "";
+  private $LoginView;
+  private $DateTimeView;
+  private $RegisterView;
+  private $BooksView;
   
+  public function __construct(LoginView $loginView, DateTimeView $dateTimeView, RegisterView $registerView, \View\BooksView $booksView) {
+    $this->LoginView = $loginView;
+    $this->DateTimeView = $dateTimeView;
+    $this->RegisterView = $registerView;
+    $this->BooksView = $booksView;
+  }
   // Render basic layout for page
-  public function render($isLoggedIn, $showRegister, LoginView $LoginView, DateTimeView $DateTimeView, registerView $RegisterView, \View\BooksView $BooksView, \View\AddBookView $AddBookView, \View\EditBookView $EditBookView) {
+  public function render(bool $isLoggedIn, bool $showRegister) {
     echo '<!DOCTYPE html>
       <html>
         <head>
@@ -17,10 +27,10 @@ class LayoutView {
           ' . $this->renderIsLoggedIn($isLoggedIn) . '
 
           <div class="container">
-              ' . $this->registerUser($showRegister, $LoginView, $RegisterView, $isLoggedIn) . '
-              ' . $this->showBooks($isLoggedIn, $BooksView, $AddBookView, $EditBookView) . '
+              ' . $this->registerUser($showRegister, $isLoggedIn) . '
+              ' . $this->showBooks($isLoggedIn) . '
 
-              ' . $DateTimeView->show() . '
+              ' . $this->DateTimeView->show() . '
           </div>
          </body>
       </html>
@@ -28,7 +38,7 @@ class LayoutView {
   }
   
   // return string based on user's login status
-  private function renderIsLoggedIn($isLoggedIn) {
+  private function renderIsLoggedIn(bool $isLoggedIn) : string {
     if ($isLoggedIn) {
       return '<h2>Logged in</h2>';
     }
@@ -38,26 +48,24 @@ class LayoutView {
   }
 
   // return html link for either register user or back to main page
-  private function registerUser($showRegister, $LoginView , $RegisterView, $isLoggedIn) {
+  private function registerUser(bool $showRegister, bool $isLoggedIn) : string {
     $response = '';
     if ($showRegister) {
-      $response = '<p><a href="index.php">Back to login</a></p>' . $RegisterView->response($this->message);
+      $response = '<p><a href="index.php">Back to login</a></p>' . $this->RegisterView->response($this->message);
     } else {
       if (!$showRegister && !$isLoggedIn) {
         $response .= '<p><a href="index.php?register">Register a new user</a></p> ';
       } 
-      $response .= $LoginView->response($this->message, $isLoggedIn);
+      $response .= $this->LoginView->response($this->message, $isLoggedIn);
     } 
     return $response;
   }
 
   // If user is logged in, render views for books
-  private function showBooks($isLoggedIn, $BooksView, $AddBookView, $EditBookView) {
+  private function showBooks(bool $isLoggedIn) : string {
         if($isLoggedIn) {
-          return '<h1>Registered Books:</h1> '
-          . ' <div> '. $BooksView->render($EditBookView) . ' </div> '
-          . ' <div> <h3>Add new book: </h3>' 
-          . $AddBookView->render() . ' </div>' ;
+          return 
+          ' <div> '. $this->BooksView->render() . ' </div> ';
         } else {
           return '';
         }

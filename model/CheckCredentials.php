@@ -12,7 +12,7 @@ class CheckCredentials
   private $minPasswordLength = 5;
 
   // Function for Registration check
-  public function CheckRegister($username, $password, $passwordRepeat,$RegisterView) 
+  public function CheckRegister(string $username, string $password, string $passwordRepeat) 
   {
     if (!$this->CheckUsernameLength($username) && !$this->CheckPasswordLength($password))
     {
@@ -28,7 +28,7 @@ class CheckCredentials
       throw new \Model\ShortPassword;
     }
     // Check if username contains something other than alphanumeric characters
-    if (!\ctype_alnum($RegisterView->getRequestUserName())) 
+    if (!\ctype_alnum($username)) 
     {
       throw new \Model\InvalidCharacters;
     }
@@ -39,27 +39,27 @@ class CheckCredentials
   }
 
   // Function for Login check
-  public function CheckLogin($username, $password, $LoginView) 
+  public function CheckLogin(string $username, string $password) 
   {
     if(strlen($username) == 0) 
     {
       throw new \Model\UsernameMissing;
     } 
-    else if (strlen($LoginView->getRequestPassword()) == 0) 
+    else if (strlen($password) == 0) 
     {
       throw new \Model\PasswordMissing;
     }
   }
 
-  private function CheckUsernameLength($username):bool {
+  private function CheckUsernameLength(string $username) : bool {
     return (strlen($username) >= $this->minUserLength);
   }
 
-  private function CheckPasswordLength($password) : bool {
+  private function CheckPasswordLength(string $password) : bool {
     return (strlen($password) >= $this->minPasswordLength);
   }
 
-  private function PasswordsMatch($password, $passwordRepeat) {
+  private function PasswordsMatch(string $password, string $passwordRepeat) {
     return ($password == $passwordRepeat);
   }  
 }

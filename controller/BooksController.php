@@ -5,62 +5,72 @@ namespace Controller;
  * Controller class for user interactions that has to do with adding, editing and deleting books
  */
 class BooksController {
+  private $Library;
+  private $Database;
+  private $BooksView;
+  private $AddBookView;
+  private $EditBookView;
 
-  public function Books(\Model\Database $db, \View\BooksView $BooksView, \View\AddBookView $AddBookView, \View\EditBookView $EditBookView) {
-    if ($AddBookView->getAddBookStatus()) 
+  public function __construct(\Model\Library $library, \Model\Database $db, \View\BooksView $booksView, \View\AddBookView $addBookView, \View\EditBookView $editBookView) {
+    $this->Library = $library;
+    $this->Database = $db;
+    $this->BooksView = $booksView;
+    $this->AddBookView = $addBookView;
+    $this->EditBookView = $editBookView;
+  }
+
+  public function Books() {
+    $this->Library->getBooksFromDatabase(); // Fetch current books from library
+
+    if ($this->AddBookView->getAddBookStatus()) // Check if user has clicked Add book
     {
       try {
-        $this->CheckBookData($AddBookView->getRequestAuthor(), $AddBookView->getRequestTitle());
-        $this->addBookToDatabase($db, $EditBookView, $AddBookView);
+        $this->CheckBookData($this->AddBookView->getRequestAuthor(), $this->AddBookView->getRequestTitle());
+        $this->Library->AddNewBook($this->AddBookView->getRequestAuthor(), $this->AddBookView->getRequestTitle(), $this->AddBookView->getRequestDescription());
+        $this->BooksView->BookAdded();
       }
-      catch (\Model\NoTitleOrAuthor $e) {
-        $BooksView->NoAuthorOrTitle();
+      catch (\Model\NoTitleOrAuthor $e) { // If exception was cast, make sure user input is still available
+        $this->AddBookView->NoAuthorOrTitle();
+        $this->AddBookView->setAuthor($this->AddBookView->getRequestAuthor());
+        $this->AddBookView->setTitle($this->AddBookView->getRequestTitle());
+        $this->AddBookView->setDescription($this->AddBookView->getRequestDescription());
       }
     }
-    if ($EditBookView->getIsEditActive()) {
-      $BooksView->setBookToEdit(($db->getBookById($EditBookView->getUser(), $EditBookView->getQueryBookId()))[0]);
-    }
-    if ($EditBookView->getEditStatus()) {
+    if ($this->EditBookView->getIsEditActive()) {
       try {
-        $this->CheckBookData($AddBookView->getRequestAuthor(), $AddBookView->getRequestTitle());
-        $db->updateBook($EditBookView->getUser(), $EditBookView->getRequestBookId(), $EditBookView->getRequestAuthor(), $EditBookView->getRequestTitle(), $EditBookView->getRequestDescription());
+        $this->BooksView->setBookToEdit($this->Library->getBook($this->EditBookView->getQueryBookId()));
+      }
+      catch (\Model\BookNotFound $e) {
+        $this->BooksView->BookNotFound();
+      }
+    }
+    if ($this->EditBookView->getEditStatus()) {
+      try {
+        $this->CheckBookData($this->EditBookView->getRequestAuthor(), $this->EditBookView->getRequestTitle());
+        $this->Library->UpdateBook($this->EditBookView->getRequestBookId(), $this->EditBookView->getRequestAuthor(), $this->EditBookView->getRequestTitle(), $this->EditBookView->getRequestDescription());
+        $this->BooksView->BookEdited();
       }
       catch (\Model\NoTitleOrAuthor $e) {
-        $BooksView->NoAuthorOrTitle();
+        $this->BooksView->NoAuthorOrTitle();
       }
     }
-    if ($EditBookView->getDeleteStatus()) {
-      $db->deleteBook($EditBookView->getUser(), $EditBookView->getRequestBookId());
+    if ($this->EditBookView->getDeleteStatus()) {
+      $this->Library->DeleteBook($this->EditBookView->getRequestBookId());
     }
-    $BooksView->setBooks($this->getBooks($db, $EditBookView));
+    $this->BooksView->setBooks($this->Library->getBooks());
   }
 
   // Retrieving books from database
-  public function getBooks($db, $EditBookView) : array {
-    return $db->getBooksFromUser($EditBookView->getUser());
+  public function getBooks() : array {
+    return $this->Database->getBooksFromUser();
   }
 
-  // Identify the book with the highest id in the database,then increase that id one point to provide a unique id for a new book. 
-  private function getHighestId($books) : int {
-    $id = 0;
-    foreach ($books as $b) {
-      if (intval($b["bookid"]) >= $id) {
-        $id = (intval($b["bookid"]) + 1);
-      } 
-    }
-    return $id;
-  }
-
-  // Get id for new book and send it to the database for storage
-  private function addBookToDatabase($db, $EditBookView, $AddBookView) {
-    // getBookId
-    $id = $this->getHighestId($this->getBooks($db, $EditBookView));
-
-    // add book to database
-    $db->addBook($EditBookView->getUser(), $AddBookView->getRequestAuthor(), $AddBookView->getRequestTitle(), $AddBookView->getRequestDescription(), $id);
+  // Add new book to library
+  private function addBookToDatabase() {
+    $this->Library->AddNewBook($this->AddBookView->getRequestAuthor(), $this->AddBookView->getRequestTitle(), $this->AddBookView->getRequestDescription());
   }  
 
-  private function CheckBookData($author, $title) {
+  private function CheckBookData(string $author, string $title) {
     if (strlen($author) == 0 || strlen($title) == 0) {
       throw new \Model\NoTitleOrAuthor();
     }
