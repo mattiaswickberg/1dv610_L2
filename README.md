@@ -32,6 +32,7 @@ User is authenticated.
 ### Alternate Scenarios
 3a. User does not provide either title or author.
     - System does not add book, and presents user with a message asking them to provide at least author and title. 
+    - System preserves user input.  
 
 ## User case 2: Edit existing book
 ### Precondition
@@ -46,6 +47,7 @@ User is authenticated.
 ### Alternate Scenarios
 3a. User removes title and/or author and clicks save changes. 
     - System presents message asking user to fill in at least author and title. 
+    - System preserves user input.
 
 ## User case 3: Delete existing book
 ### Precondition
@@ -58,4 +60,4 @@ User is authenticated.
 4. System deletes book and loads main page with remaining books.
 
 # System development status
-All main scenarios implemented and tested. Alternate scenarios implemented, but message should be moved to a better location. 
+All main scenarios implemented and tested. Alternate scenarios implemented and tested, except use case 2, scenario 3a, where the system doesn't save user input when editing books. 
