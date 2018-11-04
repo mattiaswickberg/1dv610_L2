@@ -1,16 +1,23 @@
 # Login_1DV610
-
+Testing credentials:
 login: mattias
 password: hubbabubba
 
-
 # Book repository application
 
-Requirements:
+## Installation instructions
+To install this application you need a server for serving the php-files, and a database to store user credentials and library information. The application is currently made for an SQL database, and you need to provide a config file for your database. 
+- Use the template_config.php file. Fill in the information for your database, and change the name to just "config.php". 
+- Copy all the php files to your server. (Tested on an apache server run in a Ubuntu 16.04 environment). 
+- You're good to go!
+
+## Requirements:
 - User should be able to log in (using authentication module from earlier assignment).
 - User should be able to add books with a title, an author and a description.
 - User should be able to edit a book previously added, and save changes.
 - User should be able to delete a book. 
+
+# Use Cases: 
 
 ## User case 1: Add new book
 ### Precondition
